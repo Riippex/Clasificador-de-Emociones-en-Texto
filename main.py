@@ -3,6 +3,8 @@ from transformers import pipeline
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# consultar informacion sobre el dataset en: https://huggingface.co/bhadresh-savani/distilbert-base-uncased-emotion
+
 emojis = {
     "joy": "😄", "sadness": "😢", "anger": "😠",
     "fear": "😨", "love": "❤️", "surprise": "😲"
