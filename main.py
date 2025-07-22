@@ -10,20 +10,26 @@ emojis = {
     "fear": "😨", "love": "❤️", "surprise": "😲"
 }
 
-# 2. Cargar modelo
+# Configuración inicial 
+def configurar_pagina():
+    st.set_page_config(page_title="Clasificador de Emociones en Texto ", page_icon="🧠")
+    st.title("Clasificador de Emociones en Texto")
+    st.markdown("Escribe una frase **(En ingles)** y detectaremos la emoción que transmite usando IA")
+
+# Cargar modelo
 @st.cache_resource
 def cargar_modelo():
     return pipeline("text-classification", model="bhadresh-savani/distilbert-base-uncased-emotion")
 
-# 3. Inicializar historial 
+# Inicializar historial 
 def inicializar_historial():
     if "historial" not in st.session_state:
         st.session_state.historial = pd.DataFrame(columns=["Texto", "Emoción", "Confianza"])
 
-# 4. Clasificar texto e interactuar
+# Clasificar texto e interactuar
 def mostrar_interfaz(modelo):
-    st.title("Clasificador de Emociones en Texto")
-    st.markdown("Escribe una frase **(En ingles)** y detectaremos la emoción que transmite usando IA")
+
+    configurar_pagina()
 
     texto = st.text_input("Escribe tu texto aquí:")
 
@@ -31,7 +37,7 @@ def mostrar_interfaz(modelo):
         resultado = modelo(texto)[0]
         emocion = resultado["label"]
         confianza = round(resultado["score"] * 100, 2)
-        emoji = emojis.get(emocion, "🤖")
+        emoji = emojis.get(emocion, "")
 
         st.success(f"**Emoción detectada:** {emocion.upper()} {emoji}")
         st.info(f"**Confianza:** {confianza}%")
@@ -43,7 +49,7 @@ def mostrar_interfaz(modelo):
         }])
         st.session_state.historial = pd.concat([st.session_state.historial, nuevo], ignore_index=True)
 
-# 5. Mostrar historial y gráfico
+# Mostrar historial y gráfico
 def mostrar_historial_y_grafica():
     if not st.session_state.historial.empty:
         st.markdown("### Historial de Clasificaciones")
@@ -59,13 +65,14 @@ def mostrar_historial_y_grafica():
         ax.set_ylabel("Cantidad")
         st.pyplot(fig)
 
-# 6. Main
+# Main
 def main():
     modelo = cargar_modelo()
     inicializar_historial()
     mostrar_interfaz(modelo)
     mostrar_historial_y_grafica()
 
+# Ejecutar app
 if __name__ == "__main__":
     main()
 
